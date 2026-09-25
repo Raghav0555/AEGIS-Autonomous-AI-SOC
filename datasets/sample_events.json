@@ -1,0 +1,66 @@
+[
+  {
+    "event_id": "evt_001",
+    "timestamp": "2026-09-25T09:15:00",
+    "event_type": "LOGIN_SUCCESS",
+    "source": "AUTH",
+    "user": "rahul",
+    "ip": "10.0.0.15",
+    "severity": "low",
+    "metadata": {
+      "failed_attempts_before": 0,
+      "new_ip": false,
+      "new_device": false,
+      "privilege_level": "user",
+      "sensitive_resource_access": false,
+      "data_transfer_volume": 1200
+    }
+  },
+  {
+    "event_id": "evt_002",
+    "timestamp": "2026-09-25T09:30:00",
+    "event_type": "LOGIN_FAILURE",
+    "source": "AUTH",
+    "user": "admin",
+    "ip": "185.10.20.30",
+    "severity": "medium",
+    "metadata": {
+      "failed_attempts_before": 17,
+      "new_ip": false,
+      "new_device": false,
+      "privilege_level": "admin"
+    }
+  },
+  {
+    "event_id": "evt_003",
+    "timestamp": "2026-09-25T09:31:00",
+    "event_type": "AUTH_SUCCESS",
+    "source": "AUTH",
+    "user": "admin",
+    "ip": "185.10.20.30",
+    "severity": "high",
+    "metadata": {
+      "failed_attempts_before": 17,
+      "new_ip": true,
+      "new_device": true,
+      "privilege_level": "admin"
+    }
+  },
+  {
+    "event_id": "evt_004",
+    "timestamp": "2026-09-25T09:45:00",
+    "event_type": "DATA_ACCESS",
+    "source": "HTTP",
+    "user": "admin",
+    "ip": "185.10.20.30",
+    "severity": "critical",
+    "metadata": {
+      "failed_attempts_before": 17,
+      "new_ip": true,
+      "new_device": true,
+      "privilege_level": "admin",
+      "sensitive_resource_access": true,
+      "data_transfer_volume": 250000000
+    }
+  }
+]
