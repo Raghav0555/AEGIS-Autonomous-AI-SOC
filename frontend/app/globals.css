@@ -891,12 +891,122 @@ a {
   color: #536171;
   font-size: 13px;
 }
+/* ========================================
+   DETECTION RULES
+======================================== */
 
+.rules-panel {
+  margin-top: 14px;
+}
+
+.rules-active {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+  font-family: monospace;
+  font-size: 9px;
+}
+
+.rules-active i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.rule-card {
+  padding: 18px;
+  border-right: 1px solid rgba(27, 38, 51, 0.7);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.rule-card:last-child {
+  border-right: none;
+}
+
+.rule-card:hover {
+  background: var(--panel-hover);
+}
+
+.rule-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rule-name {
+  color: var(--text);
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.rule-card p {
+  min-height: 34px;
+  margin: 12px 0 16px;
+  color: var(--text-muted);
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.rule-bottom {
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(27, 38, 51, 0.7);
+  color: var(--text-muted);
+  font-size: 8px;
+}
+
+.rule-bottom strong {
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.rule-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--green);
+}
+
+.rule-status i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+}
 /* ========================================
    RESPONSIVE
 ======================================== */
 
 @media (max-width: 1200px) {
+  .rules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rule-card {
+    border-right: none;
+    border-bottom: 1px solid rgba(27, 38, 51, 0.7);
+  }
+
+  .rule-card:last-child {
+    border-bottom: none;
+  }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
