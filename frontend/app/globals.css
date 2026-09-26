@@ -1,5 +1,8 @@
-@import "tailwindcss";
 
+@import "tailwindcss";
+html {
+  zoom: 1.25;
+}
 :root {
   --bg: #070a0f;
   --bg-secondary: #0b1017;
