@@ -94,7 +94,29 @@ const incidents = [
     status: "Contained",
   },
 ];
-
+const detectionRules = [
+  {
+    name: "BRUTE_FORCE",
+    description: "Detects excessive failed authentication attempts.",
+    triggered: 14,
+    severity: "HIGH",
+    status: "Active",
+  },
+  {
+    name: "NEW_PRIVILEGED_SESSION",
+    description: "Detects privileged activity from an unseen IP.",
+    triggered: 6,
+    severity: "HIGH",
+    status: "Active",
+  },
+  {
+    name: "POTENTIAL_EXFILTRATION",
+    description: "Detects sensitive access followed by large data transfer.",
+    triggered: 3,
+    severity: "CRITICAL",
+    status: "Active",
+  },
+];
 function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span className={`severity severity-${severity.toLowerCase()}`}>
@@ -422,6 +444,43 @@ export default function Home() {
             </div>
           </section>
         </div>
+                  <section className="panel rules-panel">
+            <div className="panel-header">
+              <div>
+                <div className="panel-eyebrow">DETECTION ENGINE</div>
+                <h2>Detection Rules</h2>
+              </div>
+
+              <span className="rules-active">
+                <i />
+                3 rules active
+              </span>
+            </div>
+
+            <div className="rules-grid">
+              {detectionRules.map((rule) => (
+                <div className="rule-card" key={rule.name}>
+                  <div className="rule-top">
+                    <span className="rule-name">{rule.name}</span>
+                    <SeverityBadge severity={rule.severity} />
+                  </div>
+
+                  <p>{rule.description}</p>
+
+                  <div className="rule-bottom">
+                    <span>
+                      <strong>{rule.triggered}</strong> triggered
+                    </span>
+
+                    <span className="rule-status">
+                      <i />
+                      {rule.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
       </section>
     </main>
   );
