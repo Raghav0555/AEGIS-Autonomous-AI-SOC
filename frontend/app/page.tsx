@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 const stats = [
   {
     label: "Security Events",
@@ -127,6 +130,9 @@ function SeverityBadge({ severity }: { severity: string }) {
 }
 
 export default function Home() {
+const [selectedIncident, setSelectedIncident] = useState<
+  (typeof incidents)[number] | null
+>(null);
   return (
     <main className="soc-shell">
       <aside className="sidebar">
@@ -417,7 +423,11 @@ export default function Home() {
 
               <div className="incident-list">
                 {incidents.map((incident) => (
-                  <div className="incident-card" key={incident.id}>
+                  <div
+                      className="incident-card"
+                      key={incident.id}
+                      onClick={() => setSelectedIncident(incident)}
+                      >
                     <div className="incident-top">
                       <span className="incident-id">{incident.id}</span>
                       <SeverityBadge severity={incident.severity} />
@@ -482,6 +492,100 @@ export default function Home() {
             </div>
           </section>
       </section>
+      {selectedIncident && (
+  <div
+    className="incident-overlay"
+    onClick={() => setSelectedIncident(null)}
+  >
+    <aside
+      className="incident-drawer"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="drawer-header">
+        <div>
+          <div className="panel-eyebrow">INCIDENT DETAILS</div>
+          <span className="drawer-id">{selectedIncident.id}</span>
+        </div>
+
+        <button
+          className="drawer-close"
+          onClick={() => setSelectedIncident(null)}
+          aria-label="Close incident details"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="drawer-content">
+        <div className="drawer-title-row">
+          <h2>{selectedIncident.title}</h2>
+          <SeverityBadge severity={selectedIncident.severity} />
+        </div>
+
+        <div className="drawer-status">
+          <span className="incident-status">
+            <i />
+            {selectedIncident.status}
+          </span>
+        </div>
+
+        <div className="drawer-stats">
+          <div>
+            <span>CONFIDENCE</span>
+            <strong>{selectedIncident.confidence}</strong>
+          </div>
+
+          <div>
+            <span>RELATED EVENTS</span>
+            <strong>{selectedIncident.events}</strong>
+          </div>
+        </div>
+
+        <div className="drawer-section">
+          <div className="drawer-section-title">AFFECTED USER</div>
+
+          <div className="drawer-value">
+            admin
+          </div>
+        </div>
+
+        <div className="drawer-section">
+          <div className="drawer-section-title">SOURCE IP</div>
+
+          <div className="drawer-value drawer-code">
+            185.10.20.30
+          </div>
+        </div>
+
+        <div className="drawer-section">
+          <div className="drawer-section-title">RELATED ACTIVITY</div>
+
+          <div className="activity-list">
+            <div className="activity-item">
+              <span />
+              Multiple failed login attempts
+            </div>
+
+            <div className="activity-item">
+              <span />
+              New privileged session
+            </div>
+
+            <div className="activity-item">
+              <span />
+              Large outbound data transfer
+            </div>
+          </div>
+        </div>
+
+        <button className="investigate-button">
+          Begin AI Investigation
+          <span>→</span>
+        </button>
+      </div>
+    </aside>
+  </div>
+)}
     </main>
   );
 }

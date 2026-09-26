@@ -892,6 +892,213 @@ a {
   font-size: 13px;
 }
 /* ========================================
+   INCIDENT DRAWER
+======================================== */
+
+.incident-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.incident-drawer {
+  width: min(460px, 100vw);
+  height: 100vh;
+  overflow-y: auto;
+  border-left: 1px solid var(--border-light);
+  background: #0a0f16;
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.35);
+  animation: drawer-slide-in 0.2s ease-out;
+}
+
+@keyframes drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer-header {
+  min-height: 82px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-id {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.drawer-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.drawer-close:hover {
+  border-color: var(--border-light);
+  background: var(--panel-hover);
+  color: var(--text);
+}
+
+.drawer-content {
+  padding: 24px 22px;
+}
+
+.drawer-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.drawer-title-row h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.drawer-status {
+  margin-top: 14px;
+}
+
+.drawer-stats {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.drawer-stats > div {
+  padding: 15px;
+  background: var(--panel);
+}
+
+.drawer-stats > div + div {
+  border-left: 1px solid var(--border);
+}
+
+.drawer-stats span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.drawer-stats strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--text);
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.drawer-section {
+  margin-top: 26px;
+}
+
+.drawer-section-title {
+  margin-bottom: 9px;
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.drawer-value {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--panel);
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.drawer-code {
+  font-family: monospace;
+}
+
+.activity-list {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.activity-item {
+  min-height: 42px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(27, 38, 51, 0.7);
+  background: var(--panel);
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item span {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 7px rgba(239, 68, 68, 0.5);
+}
+
+.investigate-button {
+  width: 100%;
+  margin-top: 30px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.investigate-button:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.13);
+}
+
+.investigate-button span {
+  font-size: 16px;
+}
+/* ========================================
    DETECTION RULES
 ======================================== */
 
@@ -1074,6 +1281,13 @@ a {
 }
 
 @media (max-width: 600px) {
+  .incident-drawer {
+  width: 100vw;
+}
+
+.drawer-content {
+  padding: 20px 18px;
+}
   .stats-grid {
     grid-template-columns: 1fr;
   }
