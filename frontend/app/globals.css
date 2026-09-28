@@ -134,7 +134,9 @@ a {
 
 .navigation {
   flex: 1;
-  padding: 22px 12px;
+  min-height: 0;
+  padding: 22px 12px 150px;
+  overflow-y: auto;
 }
 
 .nav-section {
@@ -202,10 +204,18 @@ a {
 }
 
 .sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid var(--border);
-}
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
+  padding: 16px;
+
+  border-top: 1px solid var(--border);
+
+  display: block !important;
+  z-index: 20;
+}
 .system-status {
   padding: 12px;
   display: flex;
@@ -1253,11 +1263,9 @@ a {
     font-size: 14px;
   }
 
-  .nav-count,
-  .sidebar-footer {
-    display: none;
-  }
-
+.nav-count {
+  display: none;
+}
   .dashboard {
     width: calc(100% - 68px);
     margin-left: 68px;
