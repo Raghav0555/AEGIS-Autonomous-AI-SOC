@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkBackendHealth } from "@/lib/api";
+import { checkBackendHealth, fetchEvents } from "@/lib/api";
 
 const stats = [
   {
@@ -124,7 +124,16 @@ const detectionRules = [
     status: "Active",
   },
 ];
-
+type SecurityEvent = {
+  event_id: string;
+  timestamp: string;
+  event_type: string;
+  source: string;
+  user: string | null;
+  ip: string | null;
+  severity: "low" | "medium" | "high" | "critical";
+  metadata: Record<string, unknown>;
+};
 function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span className={`severity severity-${severity.toLowerCase()}`}>
@@ -142,7 +151,39 @@ export default function Home() {
   const [selectedIncident, setSelectedIncident] = useState<
     (typeof incidents)[number] | null
   >(null);
+  const [events, setEvents] = useState<SecurityEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+  useEffect(() => {
+  let mounted = true;
 
+  const loadEvents = async () => {
+    try {
+      setEventsLoading(true);
+      setEventsError(null);
+
+      const data = await fetchEvents();
+
+      if (mounted) {
+        setEvents(data);
+      }
+    } catch {
+      if (mounted) {
+        setEventsError("Unable to load security events");
+      }
+    } finally {
+      if (mounted) {
+        setEventsLoading(false);
+      }
+    }
+  };
+
+  loadEvents();
+
+  return () => {
+    mounted = false;
+  };
+}, []);
   useEffect(() => {
     let mounted = true;
 
@@ -403,7 +444,7 @@ export default function Home() {
 
                 <span>
                   <i className="legend-dot threats" />
-                  Threat detections
+                  Threats detected
                 </span>
               </div>
             </div>
@@ -502,19 +543,27 @@ export default function Home() {
                   <span>USER / IP</span>
                   <span>SEVERITY</span>
                 </div>
-
-                {events.map((event) => (
+              {eventsLoading ? (
+                <div className="event-empty-state">Loading security events...</div>
+              ) : eventsError ? (
+                <div className="event-empty-state">{eventsError}</div>
+              ) : (
+                events.map((event) => (
                   <div
                     className="event-row"
-                    key={`${event.time}-${event.event}`}
+                    key={event.event_id}
                   >
                     <span className="event-time">
-                      {event.time}
+                      {new Date(event.timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })} 
                     </span>
 
                     <span className="event-name">
                       <span className="event-icon">↗</span>
-                      {event.event}
+                      {event.event_type}
                     </span>
 
                     <span className="source-tag">
@@ -528,7 +577,8 @@ export default function Home() {
 
                     <SeverityBadge severity={event.severity} />
                   </div>
-                ))}
+                ))
+              )}
               </div>
             </div>
 

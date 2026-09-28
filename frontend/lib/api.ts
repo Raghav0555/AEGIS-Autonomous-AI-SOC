@@ -12,3 +12,15 @@ export async function checkBackendHealth() {
 
   return response.json();
 }
+
+export async function fetchEvents() {
+  const response = await fetch(`${API_URL}/api/events`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch security events");
+  }
+
+  return response.json();
+}
