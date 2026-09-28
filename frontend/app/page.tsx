@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { checkBackendHealth } from "@/lib/api";
+
 const stats = [
   {
     label: "Security Events",
@@ -97,6 +99,7 @@ const incidents = [
     status: "Contained",
   },
 ];
+
 const detectionRules = [
   {
     name: "BRUTE_FORCE",
@@ -114,12 +117,14 @@ const detectionRules = [
   },
   {
     name: "POTENTIAL_EXFILTRATION",
-    description: "Detects sensitive access followed by large data transfer.",
+    description:
+      "Detects sensitive access followed by large data transfer.",
     triggered: 3,
     severity: "CRITICAL",
     status: "Active",
   },
 ];
+
 function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span className={`severity severity-${severity.toLowerCase()}`}>
@@ -130,14 +135,44 @@ function SeverityBadge({ severity }: { severity: string }) {
 }
 
 export default function Home() {
-const [selectedIncident, setSelectedIncident] = useState<
-  (typeof incidents)[number] | null
->(null);
+  const [backendStatus, setBackendStatus] = useState<
+    "checking" | "online" | "offline"
+  >("checking");
+
+  const [selectedIncident, setSelectedIncident] = useState<
+    (typeof incidents)[number] | null
+  >(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkHealth = async () => {
+      try {
+        await checkBackendHealth();
+
+        if (mounted) {
+          setBackendStatus("online");
+        }
+      } catch {
+        if (mounted) {
+          setBackendStatus("offline");
+        }
+      }
+    };
+
+    checkHealth();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <main className="soc-shell">
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-mark">A</div>
+
           <div>
             <div className="brand-name">AEGIS</div>
             <div className="brand-subtitle">AUTONOMOUS SOC</div>
@@ -193,12 +228,35 @@ const [selectedIncident, setSelectedIncident] = useState<
           </a>
         </nav>
 
+        {/* System status belongs INSIDE the sidebar */}
         <div className="sidebar-footer">
           <div className="system-status">
-            <span className="status-pulse" />
+            <span
+              className={`status-pulse ${
+                backendStatus === "online"
+                  ? "status-online"
+                  : backendStatus === "offline"
+                    ? "status-offline"
+                    : "status-checking"
+              }`}
+            />
+
             <div>
-              <strong>System Operational</strong>
-              <small>All services healthy</small>
+              <strong>
+                {backendStatus === "online"
+                  ? "System Operational"
+                  : backendStatus === "offline"
+                    ? "Backend Offline"
+                    : "Checking System..."}
+              </strong>
+
+              <small>
+                {backendStatus === "online"
+                  ? "All services healthy"
+                  : backendStatus === "offline"
+                    ? "Backend connection unavailable"
+                    : "Connecting to backend..."}
+              </small>
             </div>
           </div>
 
@@ -209,7 +267,9 @@ const [selectedIncident, setSelectedIncident] = useState<
       <section className="dashboard">
         <header className="topbar">
           <div>
-            <div className="breadcrumb">SECURITY OPERATIONS / OVERVIEW</div>
+            <div className="breadcrumb">
+              SECURITY OPERATIONS / OVERVIEW
+            </div>
             <h1>Security Operations Center</h1>
           </div>
 
@@ -219,12 +279,16 @@ const [selectedIncident, setSelectedIncident] = useState<
               LIVE
             </div>
 
-            <button className="icon-button" aria-label="Notifications">
+            <button
+              className="icon-button"
+              aria-label="Notifications"
+            >
               ◇
             </button>
 
             <div className="operator">
               <div className="avatar">RS</div>
+
               <div>
                 <strong>Operator</strong>
                 <small>Administrator</small>
@@ -239,7 +303,9 @@ const [selectedIncident, setSelectedIncident] = useState<
               <div className="stat-card" key={stat.label}>
                 <div className="stat-header">
                   <span>{stat.label}</span>
-                  <span className={`stat-indicator ${stat.status}`} />
+                  <span
+                    className={`stat-indicator ${stat.status}`}
+                  />
                 </div>
 
                 <div className="stat-value">{stat.value}</div>
@@ -256,7 +322,9 @@ const [selectedIncident, setSelectedIncident] = useState<
             <div className="panel threat-panel">
               <div className="panel-header">
                 <div>
-                  <div className="panel-eyebrow">THREAT OVERVIEW</div>
+                  <div className="panel-eyebrow">
+                    THREAT OVERVIEW
+                  </div>
                   <h2>Detection Activity</h2>
                 </div>
 
@@ -278,15 +346,28 @@ const [selectedIncident, setSelectedIncident] = useState<
 
                 <div className="chart-area">
                   <div className="chart-grid" />
+
                   <svg
                     className="chart-line"
                     viewBox="0 0 700 220"
                     preserveAspectRatio="none"
                   >
                     <defs>
-                      <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(56, 189, 248, 0.25)" />
-                        <stop offset="100%" stopColor="rgba(56, 189, 248, 0)" />
+                      <linearGradient
+                        id="areaGradient"
+                        x1="0"
+                        x2="0"
+                        y1="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="rgba(56, 189, 248, 0.25)"
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="rgba(56, 189, 248, 0)"
+                        />
                       </linearGradient>
                     </defs>
 
@@ -315,15 +396,24 @@ const [selectedIncident, setSelectedIncident] = useState<
               </div>
 
               <div className="chart-legend">
-                <span><i className="legend-dot events" /> Events detected</span>
-                <span><i className="legend-dot threats" /> Threat detections</span>
+                <span>
+                  <i className="legend-dot events" />
+                  Events detected
+                </span>
+
+                <span>
+                  <i className="legend-dot threats" />
+                  Threat detections
+                </span>
               </div>
             </div>
 
             <div className="panel severity-panel">
               <div className="panel-header">
                 <div>
-                  <div className="panel-eyebrow">CURRENT STATE</div>
+                  <div className="panel-eyebrow">
+                    CURRENT STATE
+                  </div>
                   <h2>Severity Distribution</h2>
                 </div>
               </div>
@@ -336,34 +426,54 @@ const [selectedIncident, setSelectedIncident] = useState<
               <div className="severity-bars">
                 <div className="severity-row">
                   <div>
-                    <span className="severity-label critical-text">Critical</span>
+                    <span className="severity-label critical-text">
+                      Critical
+                    </span>
                     <span>3 events</span>
                   </div>
-                  <div className="bar"><i style={{ width: "8%" }} /></div>
+
+                  <div className="bar">
+                    <i style={{ width: "8%" }} />
+                  </div>
                 </div>
 
                 <div className="severity-row">
                   <div>
-                    <span className="severity-label high-text">High</span>
+                    <span className="severity-label high-text">
+                      High
+                    </span>
                     <span>24 events</span>
                   </div>
-                  <div className="bar"><i style={{ width: "24%" }} /></div>
+
+                  <div className="bar">
+                    <i style={{ width: "24%" }} />
+                  </div>
                 </div>
 
                 <div className="severity-row">
                   <div>
-                    <span className="severity-label medium-text">Medium</span>
+                    <span className="severity-label medium-text">
+                      Medium
+                    </span>
                     <span>86 events</span>
                   </div>
-                  <div className="bar"><i style={{ width: "48%" }} /></div>
+
+                  <div className="bar">
+                    <i style={{ width: "48%" }} />
+                  </div>
                 </div>
 
                 <div className="severity-row">
                   <div>
-                    <span className="severity-label low-text">Low</span>
+                    <span className="severity-label low-text">
+                      Low
+                    </span>
                     <span>1,171 events</span>
                   </div>
-                  <div className="bar"><i style={{ width: "92%" }} /></div>
+
+                  <div className="bar">
+                    <i style={{ width: "92%" }} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -373,11 +483,15 @@ const [selectedIncident, setSelectedIncident] = useState<
             <div className="panel events-panel">
               <div className="panel-header">
                 <div>
-                  <div className="panel-eyebrow">EVENT STREAM</div>
+                  <div className="panel-eyebrow">
+                    EVENT STREAM
+                  </div>
                   <h2>Recent Security Events</h2>
                 </div>
 
-                <button className="view-button">View all →</button>
+                <button className="view-button">
+                  View all →
+                </button>
               </div>
 
               <div className="event-table">
@@ -390,15 +504,22 @@ const [selectedIncident, setSelectedIncident] = useState<
                 </div>
 
                 {events.map((event) => (
-                  <div className="event-row" key={`${event.time}-${event.event}`}>
-                    <span className="event-time">{event.time}</span>
+                  <div
+                    className="event-row"
+                    key={`${event.time}-${event.event}`}
+                  >
+                    <span className="event-time">
+                      {event.time}
+                    </span>
 
                     <span className="event-name">
                       <span className="event-icon">↗</span>
                       {event.event}
                     </span>
 
-                    <span className="source-tag">{event.source}</span>
+                    <span className="source-tag">
+                      {event.source}
+                    </span>
 
                     <span className="event-user">
                       {event.user}
@@ -414,30 +535,41 @@ const [selectedIncident, setSelectedIncident] = useState<
             <div className="panel incidents-panel">
               <div className="panel-header">
                 <div>
-                  <div className="panel-eyebrow">INCIDENT RESPONSE</div>
+                  <div className="panel-eyebrow">
+                    INCIDENT RESPONSE
+                  </div>
                   <h2>Active Incidents</h2>
                 </div>
 
-                <button className="view-button">View all →</button>
+                <button className="view-button">
+                  View all →
+                </button>
               </div>
 
               <div className="incident-list">
                 {incidents.map((incident) => (
                   <div
-                      className="incident-card"
-                      key={incident.id}
-                      onClick={() => setSelectedIncident(incident)}
-                      >
+                    className="incident-card"
+                    key={incident.id}
+                    onClick={() => setSelectedIncident(incident)}
+                  >
                     <div className="incident-top">
-                      <span className="incident-id">{incident.id}</span>
-                      <SeverityBadge severity={incident.severity} />
+                      <span className="incident-id">
+                        {incident.id}
+                      </span>
+
+                      <SeverityBadge
+                        severity={incident.severity}
+                      />
                     </div>
 
                     <h3>{incident.title}</h3>
 
                     <div className="incident-meta">
                       <span>{incident.events} events</span>
-                      <span>Confidence {incident.confidence}</span>
+                      <span>
+                        Confidence {incident.confidence}
+                      </span>
                     </div>
 
                     <div className="incident-bottom">
@@ -453,11 +585,13 @@ const [selectedIncident, setSelectedIncident] = useState<
               </div>
             </div>
           </section>
-        </div>
-                  <section className="panel rules-panel">
+
+          <section className="panel rules-panel">
             <div className="panel-header">
               <div>
-                <div className="panel-eyebrow">DETECTION ENGINE</div>
+                <div className="panel-eyebrow">
+                  DETECTION ENGINE
+                </div>
                 <h2>Detection Rules</h2>
               </div>
 
@@ -471,15 +605,21 @@ const [selectedIncident, setSelectedIncident] = useState<
               {detectionRules.map((rule) => (
                 <div className="rule-card" key={rule.name}>
                   <div className="rule-top">
-                    <span className="rule-name">{rule.name}</span>
-                    <SeverityBadge severity={rule.severity} />
+                    <span className="rule-name">
+                      {rule.name}
+                    </span>
+
+                    <SeverityBadge
+                      severity={rule.severity}
+                    />
                   </div>
 
                   <p>{rule.description}</p>
 
                   <div className="rule-bottom">
                     <span>
-                      <strong>{rule.triggered}</strong> triggered
+                      <strong>{rule.triggered}</strong>{" "}
+                      triggered
                     </span>
 
                     <span className="rule-status">
@@ -491,101 +631,118 @@ const [selectedIncident, setSelectedIncident] = useState<
               ))}
             </div>
           </section>
+        </div>
+
+        {selectedIncident && (
+          <div
+            className="incident-overlay"
+            onClick={() => setSelectedIncident(null)}
+          >
+            <aside
+              className="incident-drawer"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="drawer-header">
+                <div>
+                  <div className="panel-eyebrow">
+                    INCIDENT DETAILS
+                  </div>
+                  <span className="drawer-id">
+                    {selectedIncident.id}
+                  </span>
+                </div>
+
+                <button
+                  className="drawer-close"
+                  onClick={() => setSelectedIncident(null)}
+                  aria-label="Close incident details"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="drawer-content">
+                <div className="drawer-title-row">
+                  <h2>{selectedIncident.title}</h2>
+
+                  <SeverityBadge
+                    severity={selectedIncident.severity}
+                  />
+                </div>
+
+                <div className="drawer-status">
+                  <span className="incident-status">
+                    <i />
+                    {selectedIncident.status}
+                  </span>
+                </div>
+
+                <div className="drawer-stats">
+                  <div>
+                    <span>CONFIDENCE</span>
+                    <strong>
+                      {selectedIncident.confidence}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>RELATED EVENTS</span>
+                    <strong>{selectedIncident.events}</strong>
+                  </div>
+                </div>
+
+                <div className="drawer-section">
+                  <div className="drawer-section-title">
+                    AFFECTED USER
+                  </div>
+
+                  <div className="drawer-value">
+                    admin
+                  </div>
+                </div>
+
+                <div className="drawer-section">
+                  <div className="drawer-section-title">
+                    SOURCE IP
+                  </div>
+
+                  <div className="drawer-value drawer-code">
+                    185.10.20.30
+                  </div>
+                </div>
+
+                <div className="drawer-section">
+                  <div className="drawer-section-title">
+                    RELATED ACTIVITY
+                  </div>
+
+                  <div className="activity-list">
+                    <div className="activity-item">
+                      <span />
+                      Multiple failed login attempts
+                    </div>
+
+                    <div className="activity-item">
+                      <span />
+                      New privileged session
+                    </div>
+
+                    <div className="activity-item">
+                      <span />
+                      Large outbound data transfer
+                    </div>
+                  </div>
+                </div>
+
+                <button className="investigate-button">
+                  Begin AI Investigation
+                  <span>→</span>
+                </button>
+              </div>
+            </aside>
+          </div>
+        )}
       </section>
-      {selectedIncident && (
-  <div
-    className="incident-overlay"
-    onClick={() => setSelectedIncident(null)}
-  >
-    <aside
-      className="incident-drawer"
-      onClick={(event) => event.stopPropagation()}
-    >
-      <div className="drawer-header">
-        <div>
-          <div className="panel-eyebrow">INCIDENT DETAILS</div>
-          <span className="drawer-id">{selectedIncident.id}</span>
-        </div>
-
-        <button
-          className="drawer-close"
-          onClick={() => setSelectedIncident(null)}
-          aria-label="Close incident details"
-        >
-          ×
-        </button>
-      </div>
-
-      <div className="drawer-content">
-        <div className="drawer-title-row">
-          <h2>{selectedIncident.title}</h2>
-          <SeverityBadge severity={selectedIncident.severity} />
-        </div>
-
-        <div className="drawer-status">
-          <span className="incident-status">
-            <i />
-            {selectedIncident.status}
-          </span>
-        </div>
-
-        <div className="drawer-stats">
-          <div>
-            <span>CONFIDENCE</span>
-            <strong>{selectedIncident.confidence}</strong>
-          </div>
-
-          <div>
-            <span>RELATED EVENTS</span>
-            <strong>{selectedIncident.events}</strong>
-          </div>
-        </div>
-
-        <div className="drawer-section">
-          <div className="drawer-section-title">AFFECTED USER</div>
-
-          <div className="drawer-value">
-            admin
-          </div>
-        </div>
-
-        <div className="drawer-section">
-          <div className="drawer-section-title">SOURCE IP</div>
-
-          <div className="drawer-value drawer-code">
-            185.10.20.30
-          </div>
-        </div>
-
-        <div className="drawer-section">
-          <div className="drawer-section-title">RELATED ACTIVITY</div>
-
-          <div className="activity-list">
-            <div className="activity-item">
-              <span />
-              Multiple failed login attempts
-            </div>
-
-            <div className="activity-item">
-              <span />
-              New privileged session
-            </div>
-
-            <div className="activity-item">
-              <span />
-              Large outbound data transfer
-            </div>
-          </div>
-        </div>
-
-        <button className="investigate-button">
-          Begin AI Investigation
-          <span>→</span>
-        </button>
-      </div>
-    </aside>
-  </div>
-)}
     </main>
   );
 }
