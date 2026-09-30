@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes.incidents import router as incidents_router
 from app.api.routes.health import router as health_router
 from app.api.routes.events import router as events_router
-
+from app.api.routes.incidents import router as incidents_router
 
 app = FastAPI(
     title="AEGIS",
@@ -17,7 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(
     health_router,
     prefix="/api",
@@ -29,7 +28,11 @@ app.include_router(
     prefix="/api",
     tags=["Events"],
 )
-
+app.include_router(
+    incidents_router,
+    prefix="/api",
+    tags=["Incidents"],
+)
 
 @app.get("/")
 def root():
