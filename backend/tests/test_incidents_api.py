@@ -15,3 +15,12 @@ def test_get_incidents_returns_incidents():
 
     assert isinstance(data, list)
     assert len(data) > 0
+    assert isinstance(data, list)
+    assert len(data) > 0
+
+    incident = data[0]
+
+    assert "incident_id" in incident
+    assert "severity" in incident
+    assert "confidence" in incident
+    assert "events" in incident
