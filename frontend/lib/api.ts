@@ -24,3 +24,14 @@ export async function fetchEvents() {
 
   return response.json();
 }
+export async function fetchIncidents() {
+  const response = await fetch(`${API_URL}/api/incidents`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch incidents");
+  }
+
+  return response.json();
+}
