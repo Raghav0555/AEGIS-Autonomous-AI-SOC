@@ -162,6 +162,7 @@ export default function Home() {
     (typeof incidents)[number] | null
   >(null);
   const [events, setEvents] = useState<SecurityEvent[]>([]);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
   useEffect(() => {
