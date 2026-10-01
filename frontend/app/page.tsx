@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkBackendHealth, fetchEvents } from "@/lib/api";
+import {
+  checkBackendHealth,
+  fetchEvents,
+  fetchIncidents,
+} from "@/lib/api";
 
 const stats = [
   {
@@ -73,30 +77,36 @@ const events = [
   },
 ];
 
-const incidents = [
+const fallbackIncidents: Incident[] = [
   {
-    id: "INC-024",
-    title: "Potential account compromise",
-    severity: "CRITICAL",
-    events: 18,
-    confidence: "94%",
-    status: "Investigating",
+    incident_id: "INC-024",
+    incident_type: "Potential account compromise",
+    severity: "critical",
+    events: ["EVT-101", "EVT-102", "EVT-103"],
+    confidence: 0.94,
+    affected_users: ["admin"],
+    source_ips: ["185.10.20.30"],
+    created_at: "2026-10-01T10:42:18Z",
   },
   {
-    id: "INC-023",
-    title: "Brute-force authentication attempt",
-    severity: "HIGH",
-    events: 12,
-    confidence: "91%",
-    status: "Investigating",
+    incident_id: "INC-023",
+    incident_type: "Brute-force authentication attempt",
+    severity: "high",
+    events: ["EVT-104", "EVT-105", "EVT-106"],
+    confidence: 0.91,
+    affected_users: ["admin"],
+    source_ips: ["185.10.20.30"],
+    created_at: "2026-10-01T10:41:52Z",
   },
   {
-    id: "INC-022",
-    title: "Unusual privileged activity",
-    severity: "HIGH",
-    events: 7,
-    confidence: "86%",
-    status: "Contained",
+    incident_id: "INC-022",
+    incident_type: "Unusual privileged activity",
+    severity: "high",
+    events: ["EVT-107", "EVT-108"],
+    confidence: 0.86,
+    affected_users: ["admin"],
+    source_ips: ["10.0.0.15"],
+    created_at: "2026-10-01T10:39:11Z",
   },
 ];
 
@@ -144,6 +154,13 @@ type Incident = {
   events: string[];
   created_at: string;
 };
+
+const formatConfidence = (confidence: number) =>
+  `${Math.round(confidence * 100)}%`;
+
+const getIncidentStatus = (incident: Incident) =>
+  incident.events.length > 2 ? "Investigating" : "Contained";
+
 function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span className={`severity severity-${severity.toLowerCase()}`}>
@@ -158,45 +175,79 @@ export default function Home() {
     "checking" | "online" | "offline"
   >("checking");
 
-  const [selectedIncident, setSelectedIncident] = useState<
-    (typeof incidents)[number] | null
-  >(null);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(
+    null,
+  );
   const [events, setEvents] = useState<SecurityEvent[]>([]);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [incidents, setIncidents] = useState<Incident[]>(fallbackIncidents);
   const [incidentsLoading, setIncidentsLoading] = useState(true);
-const [incidentsError, setIncidentsError] = useState<string | null>(null);
+  const [incidentsError, setIncidentsError] = useState<string | null>(null);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
+
   useEffect(() => {
-  let mounted = true;
+    let mounted = true;
 
-  const loadEvents = async () => {
-    try {
-      setEventsLoading(true);
-      setEventsError(null);
+    const loadEvents = async () => {
+      try {
+        setEventsLoading(true);
+        setEventsError(null);
 
-      const data = await fetchEvents();
+        const data = await fetchEvents();
 
-      if (mounted) {
-        setEvents(data);
+        if (mounted) {
+          setEvents(data);
+        }
+      } catch {
+        if (mounted) {
+          setEventsError("Unable to load security events");
+        }
+      } finally {
+        if (mounted) {
+          setEventsLoading(false);
+        }
       }
-    } catch {
-      if (mounted) {
-        setEventsError("Unable to load security events");
-      }
-    } finally {
-      if (mounted) {
-        setEventsLoading(false);
-      }
-    }
-  };
+    };
 
-  loadEvents();
+    loadEvents();
 
-  return () => {
-    mounted = false;
-  };
-}, []);
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadIncidents = async () => {
+      try {
+        setIncidentsLoading(true);
+        setIncidentsError(null);
+
+        const data = await fetchIncidents();
+
+        if (mounted) {
+          setIncidents(Array.isArray(data) ? (data as Incident[]) : fallbackIncidents);
+        }
+      } catch {
+        if (mounted) {
+          setIncidentsError("Unable to load security incidents");
+          setIncidents(fallbackIncidents);
+        }
+      } finally {
+        if (mounted) {
+          setIncidentsLoading(false);
+        }
+      }
+    };
+
+    loadIncidents();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   useEffect(() => {
     let mounted = true;
 
@@ -610,41 +661,47 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
               </div>
 
               <div className="incident-list">
-                {incidents.map((incident) => (
-                  <div
-                    className="incident-card"
-                    key={incident.id}
-                    onClick={() => setSelectedIncident(incident)}
-                  >
-                    <div className="incident-top">
-                      <span className="incident-id">
-                        {incident.id}
-                      </span>
+                {incidentsLoading ? (
+                  <div className="event-empty-state">Loading incidents...</div>
+                ) : incidentsError ? (
+                  <div className="event-empty-state">{incidentsError}</div>
+                ) : (
+                  incidents.map((incident) => (
+                    <div
+                      className="incident-card"
+                      key={incident.incident_id}
+                      onClick={() => setSelectedIncident(incident)}
+                    >
+                      <div className="incident-top">
+                        <span className="incident-id">
+                          {incident.incident_id}
+                        </span>
 
-                      <SeverityBadge
-                        severity={incident.severity}
-                      />
+                        <SeverityBadge
+                          severity={incident.severity}
+                        />
+                      </div>
+
+                      <h3>{incident.incident_type}</h3>
+
+                      <div className="incident-meta">
+                        <span>{incident.events.length} events</span>
+                        <span>
+                          Confidence {formatConfidence(incident.confidence)}
+                        </span>
+                      </div>
+
+                      <div className="incident-bottom">
+                        <span className="incident-status">
+                          <i />
+                          {getIncidentStatus(incident)}
+                        </span>
+
+                        <span className="incident-arrow">→</span>
+                      </div>
                     </div>
-
-                    <h3>{incident.title}</h3>
-
-                    <div className="incident-meta">
-                      <span>{incident.events} events</span>
-                      <span>
-                        Confidence {incident.confidence}
-                      </span>
-                    </div>
-
-                    <div className="incident-bottom">
-                      <span className="incident-status">
-                        <i />
-                        {incident.status}
-                      </span>
-
-                      <span className="incident-arrow">→</span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </section>
@@ -711,7 +768,7 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
                     INCIDENT DETAILS
                   </div>
                   <span className="drawer-id">
-                    {selectedIncident.id}
+                    {selectedIncident.incident_id}
                   </span>
                 </div>
 
@@ -726,7 +783,7 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
 
               <div className="drawer-content">
                 <div className="drawer-title-row">
-                  <h2>{selectedIncident.title}</h2>
+                  <h2>{selectedIncident.incident_type}</h2>
 
                   <SeverityBadge
                     severity={selectedIncident.severity}
@@ -736,7 +793,7 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
                 <div className="drawer-status">
                   <span className="incident-status">
                     <i />
-                    {selectedIncident.status}
+                    {getIncidentStatus(selectedIncident)}
                   </span>
                 </div>
 
@@ -744,13 +801,13 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
                   <div>
                     <span>CONFIDENCE</span>
                     <strong>
-                      {selectedIncident.confidence}
+                      {formatConfidence(selectedIncident.confidence)}
                     </strong>
                   </div>
 
                   <div>
                     <span>RELATED EVENTS</span>
-                    <strong>{selectedIncident.events}</strong>
+                    <strong>{selectedIncident.events.length}</strong>
                   </div>
                 </div>
 
@@ -760,7 +817,7 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
                   </div>
 
                   <div className="drawer-value">
-                    admin
+                    {selectedIncident.affected_users[0] ?? "Unknown"}
                   </div>
                 </div>
 
@@ -770,7 +827,7 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
                   </div>
 
                   <div className="drawer-value drawer-code">
-                    185.10.20.30
+                    {selectedIncident.source_ips[0] ?? "Unknown"}
                   </div>
                 </div>
 
@@ -780,20 +837,12 @@ const [incidentsError, setIncidentsError] = useState<string | null>(null);
                   </div>
 
                   <div className="activity-list">
-                    <div className="activity-item">
-                      <span />
-                      Multiple failed login attempts
-                    </div>
-
-                    <div className="activity-item">
-                      <span />
-                      New privileged session
-                    </div>
-
-                    <div className="activity-item">
-                      <span />
-                      Large outbound data transfer
-                    </div>
+                    {selectedIncident.events.slice(0, 3).map((eventId) => (
+                      <div key={eventId} className="activity-item">
+                        <span />
+                        {eventId}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
