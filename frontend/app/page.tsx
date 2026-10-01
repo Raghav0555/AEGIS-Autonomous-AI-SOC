@@ -134,6 +134,16 @@ type SecurityEvent = {
   severity: "low" | "medium" | "high" | "critical";
   metadata: Record<string, unknown>;
 };
+type Incident = {
+  incident_id: string;
+  severity: "low" | "medium" | "high" | "critical";
+  confidence: number;
+  incident_type: string;
+  affected_users: string[];
+  source_ips: string[];
+  events: string[];
+  created_at: string;
+};
 function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span className={`severity severity-${severity.toLowerCase()}`}>
