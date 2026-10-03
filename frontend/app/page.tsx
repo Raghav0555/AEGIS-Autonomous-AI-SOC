@@ -186,6 +186,7 @@ export default function Home() {
   const [incidents, setIncidents] = useState<Incident[]>(fallbackIncidents);
   const [incidentsLoading, setIncidentsLoading] = useState(true);
   const [incidentsError, setIncidentsError] = useState<string | null>(null);
+  const [detections, setDetections] = useState<Detection[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
 
