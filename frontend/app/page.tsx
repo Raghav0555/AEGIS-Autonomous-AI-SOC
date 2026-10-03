@@ -154,7 +154,11 @@ type Incident = {
   events: string[];
   created_at: string;
 };
-
+type Detection = {
+  rule: string;
+  severity: "low" | "medium" | "high" | "critical";
+  reason: string;
+};
 const formatConfidence = (confidence: number) =>
   `${Math.round(confidence * 100)}%`;
 
@@ -182,9 +186,10 @@ export default function Home() {
   const [incidents, setIncidents] = useState<Incident[]>(fallbackIncidents);
   const [incidentsLoading, setIncidentsLoading] = useState(true);
   const [incidentsError, setIncidentsError] = useState<string | null>(null);
+  const [detections, setDetections] = useState<Detection[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
-
+  const [detectionsLoading, setDetectionsLoading] = useState(true);
   useEffect(() => {
     let mounted = true;
 
