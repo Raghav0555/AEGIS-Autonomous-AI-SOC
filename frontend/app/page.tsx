@@ -154,7 +154,11 @@ type Incident = {
   events: string[];
   created_at: string;
 };
-
+type Detection = {
+  rule: string;
+  severity: "low" | "medium" | "high" | "critical";
+  reason: string;
+};
 const formatConfidence = (confidence: number) =>
   `${Math.round(confidence * 100)}%`;
 
