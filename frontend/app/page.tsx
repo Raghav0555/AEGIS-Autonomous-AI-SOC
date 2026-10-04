@@ -190,6 +190,7 @@ export default function Home() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
   const [detectionsLoading, setDetectionsLoading] = useState(true);
+  const [detectionsError, setDetectionsError] = useState<string | null>(null);
   useEffect(() => {
     let mounted = true;
 
