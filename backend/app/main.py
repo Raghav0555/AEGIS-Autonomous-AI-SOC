@@ -4,7 +4,7 @@ from app.api.routes.incidents import router as incidents_router
 from app.api.routes.health import router as health_router
 from app.api.routes.events import router as events_router
 from app.api.routes.incidents import router as incidents_router
-
+from app.api.routes.detection import router as detection_router
 app = FastAPI(
     title="AEGIS",
     description="Autonomous AI-powered Security Operations Center",
@@ -32,6 +32,11 @@ app.include_router(
     incidents_router,
     prefix="/api",
     tags=["Incidents"],
+)
+app.include_router(
+    detection_router,
+    prefix="/api",
+    tags=["Detection"],
 )
 
 @app.get("/")
