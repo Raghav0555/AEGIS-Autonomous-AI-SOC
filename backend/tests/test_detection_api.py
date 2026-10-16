@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-
+from unittest.mock import patch
 from app.main import app
 
 client = TestClient(app)
@@ -24,3 +24,14 @@ def test_run_detection_alerts_have_required_fields():
         assert "rule" in alert
         assert "severity" in alert
         assert "reason" in alert
+        
+def test_run_detection_with_no_events():
+    with patch("app.api.routes.detection.load_events", return_value=[]):
+        response = client.post("/api/detection/run")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "events_analyzed": 0,
+        "alerts_generated": 0,
+        "alerts": [],
+    }
