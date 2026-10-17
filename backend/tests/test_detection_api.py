@@ -35,3 +35,24 @@ def test_run_detection_with_no_events():
         "alerts_generated": 0,
         "alerts": [],
     }
+def test_run_detection_filters_by_severity():
+    response = client.post(
+        "/api/detection/run?severity=critical"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert all(
+        alert["severity"] == "critical"
+        for alert in data["alerts"]
+    )
+    assert data["alerts_generated"] == len(data["alerts"])
+
+
+def test_run_detection_rejects_invalid_severity():
+    response = client.post(
+        "/api/detection/run?severity=urgent"
+    )
+
+    assert response.status_code == 422
