@@ -56,3 +56,17 @@ def test_run_detection_rejects_invalid_severity():
     )
 
     assert response.status_code == 422
+
+def test_run_detection_filters_by_high_severity():
+    response = client.post(
+        "/api/detection/run?severity=high"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["events_analyzed"] > 0
+    assert all(
+        alert["severity"] == "high"
+        for alert in data["alerts"]
+    )
