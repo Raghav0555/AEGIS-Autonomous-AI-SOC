@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Query
 
 from app.detection.rules.engine import detect_rules
-from app.schemas.event import SecurityEvent
 from app.services.event_store import load_events
 
 router = APIRouter()
@@ -13,7 +12,6 @@ def detection_health():
         "status": "ok",
         "service": "detection-engine",
     }
-
 
 
 @router.post("/detection/run")
