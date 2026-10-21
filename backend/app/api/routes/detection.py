@@ -1,7 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from app.detection.rules.engine import detect_rules
-from app.schemas.event import SecurityEvent
 from app.services.event_store import load_events
 
 router = APIRouter()
@@ -16,7 +15,12 @@ def detection_health():
 
 
 @router.post("/detection/run")
-def run_detection():
+def run_detection(
+    severity: str | None = Query(
+        default=None,
+        pattern="^(low|medium|high|critical)$",
+    ),
+):
     events = load_events()
     alerts = []
 
@@ -32,6 +36,12 @@ def run_detection():
                 "ip": event.ip,
                 **detection,
             })
+
+    if severity is not None:
+        alerts = [
+            alert for alert in alerts
+            if alert["severity"] == severity
+        ]
 
     return {
         "events_analyzed": len(events),

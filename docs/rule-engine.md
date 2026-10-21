@@ -17,4 +17,20 @@ Feature Extraction
       ↓
 Rule Engine
       ↓
-Detection Results
+Detection Results```
+
+## Rules
+
+| Rule | Severity | Trigger |
+|------|----------|---------|
+| `BRUTE_FORCE` | high | More than 10 failed login attempts |
+| `NEW_PRIVILEGED_SESSION` | high | Admin activity from a previously unseen IP |
+| `POTENTIAL_EXFILTRATION` | critical | Sensitive resource access with more than 100 MB outbound transfer |
+
+Thresholds live in `backend/app/detection/rules/constants.py`.
+
+## API
+
+`POST /api/detection/run` runs every rule against the stored events.
+
+Optional query parameter `severity` (`low`, `medium`, `high`, `critical`) returns only alerts of that severity. Any other value returns `422`.
