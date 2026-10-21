@@ -4,6 +4,8 @@ from app.detection.rules.constants import (
     POTENTIAL_EXFILTRATION,
     HIGH,
     CRITICAL,
+    FAILED_LOGIN_THRESHOLD,
+    EXFILTRATION_BYTES_THRESHOLD,
 )
 
 from app.schemas.event import SecurityEvent
@@ -14,7 +16,7 @@ def detect_rules(event: SecurityEvent) -> list[dict]:
     features = extract_features(event)
     detections = []
 
-    if features["failed_login_count"] > 10:
+    if features["failed_login_count"] > FAILED_LOGIN_THRESHOLD:
         detections.append({
             "rule": BRUTE_FORCE,
             "severity": HIGH,
@@ -30,7 +32,7 @@ def detect_rules(event: SecurityEvent) -> list[dict]:
 
     if (
         features["sensitive_resource_access"]
-        and features["data_transfer_volume"] > 100000000
+        and features["data_transfer_volume"] > EXFILTRATION_BYTES_THRESHOLD
     ):
         detections.append({
             "rule": POTENTIAL_EXFILTRATION,
