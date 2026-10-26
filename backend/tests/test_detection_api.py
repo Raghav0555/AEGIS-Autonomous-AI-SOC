@@ -70,3 +70,10 @@ def test_run_detection_filters_by_high_severity():
         alert["severity"] == "high"
         for alert in data["alerts"]
     )
+
+
+def test_detection_health():
+    response = client.get("/api/detection/health")
+
+    assert response.status_code == 200
+    assert response.json()["service"] == "detection-engine"
