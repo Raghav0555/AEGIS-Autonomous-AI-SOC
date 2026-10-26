@@ -13,3 +13,11 @@ def test_health_check():
         "status": "ok",
         "service": "AEGIS",
     }
+
+
+def test_root_returns_service_info():
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "AEGIS"
+    assert "version" in response.json()
