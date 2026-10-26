@@ -5,20 +5,21 @@ from app.schemas.event import SecurityEvent
 from app.schemas.incident import Incident, IncidentSeverity
 
 
+SEVERITY_ORDER = {
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "critical": 4,
+}
+
+
 def build_incident(events: list[SecurityEvent]) -> Incident:
     if not events:
         raise ValueError("Cannot build an incident from an empty event group")
 
-    severity_order = {
-        "low": 1,
-        "medium": 2,
-        "high": 3,
-        "critical": 4,
-    }
-
     highest_severity = max(
         events,
-        key=lambda event: severity_order[event.severity.value],
+        key=lambda event: SEVERITY_ORDER[event.severity.value],
     ).severity
 
     affected_users = sorted(
