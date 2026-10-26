@@ -22,3 +22,11 @@ def test_auth_event_normalization():
     assert event.user == "admin"
     assert event.ip == "185.10.20.30"
     assert event.severity.value == "medium"
+
+def test_unsupported_source_raises():
+    try:
+        normalize_event("dns", {})
+    except ValueError as error:
+        assert "Unsupported event source" in str(error)
+    else:
+        raise AssertionError("Expected ValueError")
