@@ -287,7 +287,7 @@ export default function Home() {
           <a className="nav-item" href="#">
             <span>◈</span>
             Incidents
-            <span className="nav-count">24</span>
+            <span className="nav-count">{incidents.length}</span>
           </a>
 
           <a className="nav-item" href="#">
@@ -325,7 +325,6 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* System status belongs INSIDE the sidebar */}
         <div className="sidebar-footer">
           <div className="system-status">
             <span
