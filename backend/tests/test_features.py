@@ -27,3 +27,19 @@ def test_security_feature_extraction():
     assert features["new_ip"] is True
     assert features["new_device"] is True
     assert features["privilege_level"] == "admin"
+
+
+def test_feature_defaults_when_metadata_missing():
+    event = SecurityEvent(
+        event_id="evt_002",
+        timestamp=datetime.fromisoformat("2026-09-24T10:05:00"),
+        event_type="LOGIN_SUCCESS",
+        source="AUTH",
+    )
+
+    features = extract_features(event)
+
+    assert features["failed_login_count"] == 0
+    assert features["new_ip"] is False
+    assert features["privilege_level"] == "unknown"
+    assert features["data_transfer_volume"] == 0
