@@ -34,49 +34,6 @@ const stats = [
   },
 ];
 
-const events = [
-  {
-    time: "10:42:18",
-    event: "Multiple failed login attempts",
-    source: "AUTH",
-    user: "admin",
-    ip: "185.10.20.30",
-    severity: "HIGH",
-  },
-  {
-    time: "10:41:52",
-    event: "New privileged session",
-    source: "AUTH",
-    user: "admin",
-    ip: "185.10.20.30",
-    severity: "HIGH",
-  },
-  {
-    time: "10:39:11",
-    event: "Large outbound data transfer",
-    source: "HTTP",
-    user: "admin",
-    ip: "185.10.20.30",
-    severity: "CRITICAL",
-  },
-  {
-    time: "10:36:44",
-    event: "Successful user authentication",
-    source: "AUTH",
-    user: "rahul",
-    ip: "10.0.0.15",
-    severity: "LOW",
-  },
-  {
-    time: "10:34:27",
-    event: "Suspicious request frequency",
-    source: "HTTP",
-    user: "service-api",
-    ip: "10.0.2.42",
-    severity: "MEDIUM",
-  },
-];
-
 const fallbackIncidents: Incident[] = [
   {
     incident_id: "INC-024",
