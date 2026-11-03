@@ -613,7 +613,7 @@ export default function Home() {
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
-                      })} 
+                      })}
                     </span>
 
                     <span className="event-name">
