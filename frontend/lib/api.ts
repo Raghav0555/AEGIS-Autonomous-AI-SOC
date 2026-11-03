@@ -39,3 +39,20 @@ export async function fetchIncidents(): Promise<unknown[]> {
 
   return response.json();
 }
+
+export async function runDetection(): Promise<{
+  events_analyzed: number;
+  alerts_generated: number;
+  alerts: unknown[];
+}> {
+  const response = await fetch(`${API_URL}/api/detection/run`, {
+    method: "POST",
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to run detection");
+  }
+
+  return response.json();
+}
