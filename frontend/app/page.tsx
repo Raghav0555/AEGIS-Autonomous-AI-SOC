@@ -661,7 +661,15 @@ export default function Home() {
                     <div
                       className="incident-card"
                       key={incident.incident_id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setSelectedIncident(incident)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setSelectedIncident(incident);
+                        }
+                      }}
                     >
                       <div className="incident-top">
                         <span className="incident-id">
