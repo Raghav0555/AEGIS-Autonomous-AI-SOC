@@ -708,7 +708,7 @@ export default function Home() {
 
               <span className="rules-active">
                 <i />
-                3 rules active
+                {detectionRules.length} rules active
               </span>
             </div>
 
