@@ -157,7 +157,7 @@ export default function Home() {
         const data = await fetchEvents();
 
         if (mounted) {
-          setEvents(data);
+          setEvents(data as SecurityEvent[]);
         }
       } catch {
         if (mounted) {
