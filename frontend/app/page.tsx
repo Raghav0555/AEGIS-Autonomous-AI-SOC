@@ -5,6 +5,7 @@ import {
   checkBackendHealth,
   fetchEvents,
   fetchIncidents,
+  runDetection,
 } from "@/lib/api";
 
 const stats = [
@@ -71,14 +72,12 @@ const detectionRules = [
   {
     name: "BRUTE_FORCE",
     description: "Detects excessive failed authentication attempts.",
-    triggered: 14,
     severity: "HIGH",
     status: "Active",
   },
   {
     name: "NEW_PRIVILEGED_SESSION",
     description: "Detects privileged activity from an unseen IP.",
-    triggered: 6,
     severity: "HIGH",
     status: "Active",
   },
@@ -86,7 +85,6 @@ const detectionRules = [
     name: "POTENTIAL_EXFILTRATION",
     description:
       "Detects sensitive access followed by large data transfer.",
-    triggered: 3,
     severity: "CRITICAL",
     status: "Active",
   },
@@ -205,6 +203,37 @@ export default function Home() {
     };
 
     loadIncidents();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadDetections = async () => {
+      try {
+        setDetectionsLoading(true);
+        setDetectionsError(null);
+
+        const data = await runDetection();
+
+        if (mounted) {
+          setDetections(data.alerts as Detection[]);
+        }
+      } catch {
+        if (mounted) {
+          setDetectionsError("Unable to run detection");
+        }
+      } finally {
+        if (mounted) {
+          setDetectionsLoading(false);
+        }
+      }
+    };
+
+    loadDetections();
 
     return () => {
       mounted = false;
@@ -701,7 +730,13 @@ export default function Home() {
 
                   <div className="rule-bottom">
                     <span>
-                      <strong>{rule.triggered}</strong>{" "}
+                      <strong>
+                        {detectionsLoading || detectionsError
+                          ? "-"
+                          : detections.filter(
+                              (detection) => detection.rule === rule.name,
+                            ).length}
+                      </strong>{" "}
                       triggered
                     </span>
 
