@@ -264,6 +264,19 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!selectedIncident) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedIncident(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedIncident]);
+
   return (
     <main className="soc-shell">
       <aside className="sidebar">
