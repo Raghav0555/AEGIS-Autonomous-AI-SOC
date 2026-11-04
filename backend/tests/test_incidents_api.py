@@ -15,8 +15,6 @@ def test_get_incidents_returns_incidents():
 
     assert isinstance(data, list)
     assert len(data) > 0
-    assert isinstance(data, list)
-    assert len(data) > 0
 
     incident = data[0]
 
@@ -24,6 +22,7 @@ def test_get_incidents_returns_incidents():
     assert "severity" in incident
     assert "confidence" in incident
     assert "events" in incident
+
 
 def test_incidents_include_event_references():
     response = client.get("/api/incidents")
