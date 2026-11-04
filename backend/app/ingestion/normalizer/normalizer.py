@@ -9,6 +9,8 @@ def normalize_event(source: str, raw_log: dict) -> SecurityEvent:
     AEGIS SecurityEvent format.
     """
 
+    source = source.lower()
+
     if source == "auth":
         return parse_auth_log(raw_log)
 

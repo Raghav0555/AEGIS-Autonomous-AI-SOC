@@ -30,3 +30,15 @@ def test_unsupported_source_raises():
         assert "Unsupported event source" in str(error)
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_source_is_case_insensitive():
+    raw_event = {
+        "event_id": "evt_100",
+        "timestamp": "2026-09-25T10:00:00",
+        "event_type": "LOGIN_SUCCESS",
+    }
+
+    event = normalize_event("AUTH", raw_event)
+
+    assert event.source == "AUTH"
