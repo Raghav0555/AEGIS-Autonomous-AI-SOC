@@ -833,21 +833,25 @@ export default function Home() {
 
                 <div className="drawer-section">
                   <div className="drawer-section-title">
-                    AFFECTED USER
+                    AFFECTED USERS
                   </div>
 
                   <div className="drawer-value">
-                    {selectedIncident.affected_users[0] ?? "Unknown"}
+                    {selectedIncident.affected_users.length > 0
+                      ? selectedIncident.affected_users.join(", ")
+                      : "Unknown"}
                   </div>
                 </div>
 
                 <div className="drawer-section">
                   <div className="drawer-section-title">
-                    SOURCE IP
+                    SOURCE IPS
                   </div>
 
                   <div className="drawer-value drawer-code">
-                    {selectedIncident.source_ips[0] ?? "Unknown"}
+                    {selectedIncident.source_ips.length > 0
+                      ? selectedIncident.source_ips.join(", ")
+                      : "Unknown"}
                   </div>
                 </div>
 
