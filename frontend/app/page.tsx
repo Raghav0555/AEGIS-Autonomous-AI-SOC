@@ -8,33 +8,6 @@ import {
   runDetection,
 } from "@/lib/api";
 
-const stats = [
-  {
-    label: "Security Events",
-    value: "1,284",
-    change: "+12.5%",
-    status: "neutral",
-  },
-  {
-    label: "Active Incidents",
-    value: "24",
-    change: "+4",
-    status: "warning",
-  },
-  {
-    label: "Critical Threats",
-    value: "3",
-    change: "-2",
-    status: "critical",
-  },
-  {
-    label: "Systems Monitored",
-    value: "148",
-    change: "100%",
-    status: "success",
-  },
-];
-
 const SEVERITY_LEVELS = ["critical", "high", "medium", "low"] as const;
 
 const fallbackIncidents: Incident[] = [
@@ -279,6 +252,33 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedIncident]);
 
+  const stats = [
+    {
+      label: "Security Events",
+      value: events.length,
+      hint: "Normalized events",
+      status: "neutral",
+    },
+    {
+      label: "Active Incidents",
+      value: incidents.length,
+      hint: "Correlated incidents",
+      status: "warning",
+    },
+    {
+      label: "Critical Threats",
+      value: detections.filter((d) => d.severity === "critical").length,
+      hint: "Critical detection alerts",
+      status: "critical",
+    },
+    {
+      label: "Log Sources",
+      value: new Set(events.map((event) => event.source)).size,
+      hint: "Sources reporting",
+      status: "success",
+    },
+  ];
+
   const severityCounts = SEVERITY_LEVELS.map((level) => ({
     level,
     count: events.filter((event) => event.severity === level).length,
@@ -424,11 +424,12 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="stat-value">{stat.value}</div>
+                <div className="stat-value">
+                  {stat.value.toLocaleString()}
+                </div>
 
                 <div className="stat-change">
-                  <span>{stat.change}</span>
-                  <span>vs previous period</span>
+                  <span>{stat.hint}</span>
                 </div>
               </div>
             ))}
