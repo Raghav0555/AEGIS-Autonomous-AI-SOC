@@ -43,4 +43,14 @@ def test_get_events_contains_security_scenarios():
     assert "LOGIN_FAILURE" in event_types
     assert "AUTH_SUCCESS" in event_types
     assert "DATA_ACCESS" in event_types
-    
+
+
+def test_get_events_filters_by_source():
+    response = client.get("/api/events?source=http")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) > 0
+    assert all(event["source"] == "HTTP" for event in data)
