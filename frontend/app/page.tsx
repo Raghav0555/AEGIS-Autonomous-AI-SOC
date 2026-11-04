@@ -615,6 +615,8 @@ export default function Home() {
                 <div className="event-empty-state">Loading security events...</div>
               ) : eventsError ? (
                 <div className="event-empty-state">{eventsError}</div>
+              ) : events.length === 0 ? (
+                <div className="event-empty-state">No security events yet</div>
               ) : (
                 events.map((event) => (
                   <div
