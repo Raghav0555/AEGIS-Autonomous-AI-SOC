@@ -35,6 +35,8 @@ const stats = [
   },
 ];
 
+const SEVERITY_LEVELS = ["critical", "high", "medium", "low"] as const;
+
 const fallbackIncidents: Incident[] = [
   {
     incident_id: "INC-024",
@@ -276,6 +278,11 @@ export default function Home() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedIncident]);
+
+  const severityCounts = SEVERITY_LEVELS.map((level) => ({
+    level,
+    count: events.filter((event) => event.severity === level).length,
+  }));
 
   return (
     <main className="soc-shell">
@@ -528,62 +535,31 @@ export default function Home() {
               </div>
 
               <div className="severity-total">
-                <strong>1,284</strong>
+                <strong>{events.length.toLocaleString()}</strong>
                 <span>Total events</span>
               </div>
 
               <div className="severity-bars">
-                <div className="severity-row">
-                  <div>
-                    <span className="severity-label critical-text">
-                      Critical
-                    </span>
-                    <span>3 events</span>
-                  </div>
+                {severityCounts.map(({ level, count }) => (
+                  <div className="severity-row" key={level}>
+                    <div>
+                      <span className={`severity-label ${level}-text`}>
+                        {level.charAt(0).toUpperCase() + level.slice(1)}
+                      </span>
+                      <span>{count} events</span>
+                    </div>
 
-                  <div className="bar">
-                    <i style={{ width: "8%" }} />
+                    <div className="bar">
+                      <i
+                        style={{
+                          width: events.length
+                            ? `${Math.round((count / events.length) * 100)}%`
+                            : "0%",
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-
-                <div className="severity-row">
-                  <div>
-                    <span className="severity-label high-text">
-                      High
-                    </span>
-                    <span>24 events</span>
-                  </div>
-
-                  <div className="bar">
-                    <i style={{ width: "24%" }} />
-                  </div>
-                </div>
-
-                <div className="severity-row">
-                  <div>
-                    <span className="severity-label medium-text">
-                      Medium
-                    </span>
-                    <span>86 events</span>
-                  </div>
-
-                  <div className="bar">
-                    <i style={{ width: "48%" }} />
-                  </div>
-                </div>
-
-                <div className="severity-row">
-                  <div>
-                    <span className="severity-label low-text">
-                      Low
-                    </span>
-                    <span>1,171 events</span>
-                  </div>
-
-                  <div className="bar">
-                    <i style={{ width: "92%" }} />
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </section>
