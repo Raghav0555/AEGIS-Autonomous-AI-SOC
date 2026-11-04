@@ -8,10 +8,14 @@ from app.api.routes.incidents import router as incidents_router
 from app.api.routes.detection import router as detection_router
 
 
+APP_NAME = "AEGIS"
+APP_DESCRIPTION = "Autonomous AI-powered Security Operations Center"
+APP_VERSION = "0.1.0"
+
 app = FastAPI(
-    title="AEGIS",
-    description="Autonomous AI-powered Security Operations Center",
-    version="0.1.0",
+    title=APP_NAME,
+    description=APP_DESCRIPTION,
+    version=APP_VERSION,
 )
 app.add_middleware(
     CORSMiddleware,
@@ -48,7 +52,7 @@ app.include_router(
 @app.get("/")
 def root():
     return {
-        "name": "AEGIS",
-        "description": "Autonomous AI-powered Security Operations Center",
-        "version": "0.1.0",
+        "name": APP_NAME,
+        "description": APP_DESCRIPTION,
+        "version": APP_VERSION,
     }
