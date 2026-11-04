@@ -1,58 +1,48 @@
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export async function checkBackendHealth(): Promise<{
-  status: string;
-  service: string;
-}> {
-  const response = await fetch(`${API_URL}/api/health`, {
+async function requestJson<T>(
+  path: string,
+  errorMessage: string,
+  init: RequestInit = {},
+): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
     cache: "no-store",
+    ...init,
   });
 
   if (!response.ok) {
-    throw new Error("Backend health check failed");
+    throw new Error(errorMessage);
   }
 
   return response.json();
 }
 
-export async function fetchEvents(): Promise<unknown[]> {
-  const response = await fetch(`${API_URL}/api/events`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch security events");
-  }
-
-  return response.json();
+export function checkBackendHealth() {
+  return requestJson<{ status: string; service: string }>(
+    "/api/health",
+    "Backend health check failed",
+  );
 }
 
-export async function fetchIncidents(): Promise<unknown[]> {
-  const response = await fetch(`${API_URL}/api/incidents`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch incidents");
-  }
-
-  return response.json();
+export function fetchEvents() {
+  return requestJson<unknown[]>(
+    "/api/events",
+    "Failed to fetch security events",
+  );
 }
 
-export async function runDetection(): Promise<{
-  events_analyzed: number;
-  alerts_generated: number;
-  alerts: unknown[];
-}> {
-  const response = await fetch(`${API_URL}/api/detection/run`, {
-    method: "POST",
-    cache: "no-store",
-  });
+export function fetchIncidents() {
+  return requestJson<unknown[]>(
+    "/api/incidents",
+    "Failed to fetch incidents",
+  );
+}
 
-  if (!response.ok) {
-    throw new Error("Failed to run detection");
-  }
-
-  return response.json();
+export function runDetection() {
+  return requestJson<{
+    events_analyzed: number;
+    alerts_generated: number;
+    alerts: unknown[];
+  }>("/api/detection/run", "Failed to run detection", { method: "POST" });
 }
