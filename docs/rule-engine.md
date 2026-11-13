@@ -34,3 +34,7 @@ Thresholds live in `backend/app/detection/rules/constants.py`.
 `POST /api/detection/run` runs every rule against the stored events.
 
 Optional query parameter `severity` (`low`, `medium`, `high`, `critical`) returns only alerts of that severity. Any other value returns `422`.
+
+## Incident Type
+
+When correlated events are turned into an incident, every event is run through the rule engine. The incident is named after the most severe rule that fired (for example `POTENTIAL_EXFILTRATION`). If no rule fires, the type falls back to `CORRELATED_SECURITY_ACTIVITY`.
