@@ -681,6 +681,10 @@ export default function Home() {
               </span>
             </div>
 
+            {detectionsError && (
+              <div className="event-empty-state">{detectionsError}</div>
+            )}
+
             <div className="rules-grid">
               {detectionRules.map((rule) => (
                 <div className="rule-card" key={rule.name}>
