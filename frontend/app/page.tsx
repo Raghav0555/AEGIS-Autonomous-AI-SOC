@@ -7,6 +7,7 @@ import {
   fetchIncidents,
   runDetection,
 } from "@/lib/api";
+import type { Detection, Incident, SecurityEvent } from "@/lib/types";
 
 const SEVERITY_LEVELS = ["critical", "high", "medium", "low"] as const;
 
@@ -64,31 +65,7 @@ const detectionRules = [
     status: "Active",
   },
 ];
-type SecurityEvent = {
-  event_id: string;
-  timestamp: string;
-  event_type: string;
-  source: string;
-  user: string | null;
-  ip: string | null;
-  severity: "low" | "medium" | "high" | "critical";
-  metadata: Record<string, unknown>;
-};
-type Incident = {
-  incident_id: string;
-  severity: "low" | "medium" | "high" | "critical";
-  confidence: number;
-  incident_type: string;
-  affected_users: string[];
-  source_ips: string[];
-  events: string[];
-  created_at: string;
-};
-type Detection = {
-  rule: string;
-  severity: "low" | "medium" | "high" | "critical";
-  reason: string;
-};
+
 const formatConfidence = (confidence: number) =>
   `${Math.round(confidence * 100)}%`;
 
