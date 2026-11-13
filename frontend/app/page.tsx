@@ -93,9 +93,11 @@ export default function Home() {
   useEffect(() => {
     let mounted = true;
 
-    const loadEvents = async () => {
+    const loadEvents = async (showLoading = true) => {
       try {
-        setEventsLoading(true);
+        if (showLoading) {
+          setEventsLoading(true);
+        }
         setEventsError(null);
 
         const data = await fetchEvents();
@@ -116,8 +118,11 @@ export default function Home() {
 
     loadEvents();
 
+    const refreshTimer = window.setInterval(() => loadEvents(false), 30_000);
+
     return () => {
       mounted = false;
+      window.clearInterval(refreshTimer);
     };
   }, []);
 
