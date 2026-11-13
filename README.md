@@ -1,4 +1,7 @@
 # AEGIS-Autonomous-AI-SOC
+
+[![CI](https://github.com/Raghav0555/AEGIS-Autonomous-AI-SOC/actions/workflows/ci.yml/badge.svg)](https://github.com/Raghav0555/AEGIS-Autonomous-AI-SOC/actions/workflows/ci.yml)
+
 Autonomous AI-powered Security Operations Center for security event detection, correlation, investigation, and incident intelligence.
 ### Events & Incidents API
 
