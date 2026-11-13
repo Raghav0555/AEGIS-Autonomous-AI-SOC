@@ -54,3 +54,24 @@ def test_get_events_filters_by_source():
 
     assert len(data) > 0
     assert all(event["source"] == "HTTP" for event in data)
+
+
+def test_post_event_requires_core_fields():
+    response = client.post("/api/events", json={"event_id": "evt_999"})
+
+    assert response.status_code == 422
+
+
+def test_post_event_returns_event():
+    payload = {
+        "event_id": "evt_999",
+        "timestamp": "2026-09-25T10:00:00",
+        "event_type": "LOGIN_SUCCESS",
+        "source": "AUTH",
+    }
+
+    response = client.post("/api/events", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["event_id"] == "evt_999"
+    assert response.json()["severity"] == "low"
