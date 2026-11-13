@@ -8,6 +8,7 @@ import {
   runDetection,
 } from "@/lib/api";
 import type { Detection, Incident, SecurityEvent } from "@/lib/types";
+import SeverityBadge from "@/components/SeverityBadge";
 
 const SEVERITY_LEVELS = ["critical", "high", "medium", "low"] as const;
 
@@ -71,15 +72,6 @@ const formatConfidence = (confidence: number) =>
 
 const getIncidentStatus = (incident: Incident) =>
   incident.events.length > 2 ? "Investigating" : "Contained";
-
-function SeverityBadge({ severity }: { severity: string }) {
-  return (
-    <span className={`severity severity-${severity.toLowerCase()}`}>
-      <span className="severity-dot" />
-      {severity}
-    </span>
-  );
-}
 
 export default function Home() {
   const [backendStatus, setBackendStatus] = useState<
