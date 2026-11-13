@@ -89,3 +89,12 @@ def test_empty_event_list():
     groups = correlate_events([])
 
     assert groups == []
+
+
+def test_rejects_non_positive_window():
+    try:
+        correlate_events([], window_minutes=0)
+    except ValueError as error:
+        assert "window_minutes" in str(error)
+    else:
+        raise AssertionError("Expected ValueError")

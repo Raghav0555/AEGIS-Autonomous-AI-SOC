@@ -7,6 +7,9 @@ def correlate_events(
     events: list[SecurityEvent],
     window_minutes: int = 5,
 ) -> list[list[SecurityEvent]]:
+    if window_minutes <= 0:
+        raise ValueError("window_minutes must be positive")
+
     if not events:
         return []
 
