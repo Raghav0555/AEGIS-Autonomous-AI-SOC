@@ -80,3 +80,18 @@ def test_empty_events_raise_error():
         assert False
     except ValueError as error:
         assert str(error) == "Cannot build an incident from an empty event group"
+
+
+def test_incident_type_uses_triggered_rule():
+    event = create_event(
+        "evt_010",
+        "2026-09-25T10:00:00",
+        "admin",
+        "185.10.20.30",
+        "high",
+    )
+    event.metadata = {"failed_attempts_before": 25}
+
+    incident = build_incident([event])
+
+    assert incident.incident_type == "BRUTE_FORCE"
